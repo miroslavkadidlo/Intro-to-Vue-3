@@ -1,5 +1,4 @@
 app.component('product-display', {
-  /*html*/
   props: {
     premium: {
       type: Boolean,
@@ -19,14 +18,11 @@ app.component('product-display', {
         <p v-if="inStock">In Stock</p>
         <p v-else>Out of Stock</p>
 
-        <ul>
-          <li v-for="detail in details">
-            {{ detail }}
-          </li>
-        </ul>
-
         <p>Shipping: {{ shipping }}</p>
 
+        <ul>
+          <li v-for="detail in details">{{ detail }}</li>
+        </ul>
 
         <div 
           v-for="(variant, index) in variants" 
@@ -43,12 +39,19 @@ app.component('product-display', {
           v-on:click="addToCart">
           Add to Cart
         </button>
+
+        <button 
+          class="button" 
+          :class="{ disabledButton: !inStock }" 
+          :disabled="!inStock"
+          v-on:click="removeFromCart">
+          Remove from Cart
+        </button>
       </div>
     </div>
   </div>`,
   data() {
     return {
-        cart: 0,
         product: 'Socks',
         brand: 'Vue Mastery',
         selectedVariant: 0,
@@ -60,28 +63,31 @@ app.component('product-display', {
     }
   },
   methods: {
-    addToCart() {
-        this.cart += 1
-    },
-    updateVariant(index) {
-        this.selectedVariant = index
-    }
+      addToCart() {
+          this.$emit('add-to-cart', this.variants[this.selectedVariant].id)
+      },
+      removeFromCart() {
+          this.$emit('remove-from-cart', this.variants[this.selectedVariant].id)
+      },
+      updateVariant(index) {
+          this.selectedVariant = index
+      }
   },
   computed: {
-    title() {
-        return this.brand + ' ' + this.product
-    },
-    image() {
-        return this.variants[this.selectedVariant].image
-    },
-    inStock() {
-        return this.variants[this.selectedVariant].quantity
-    },
-    shipping() {
+      title() {
+          return this.brand + ' ' + this.product
+      },
+      image() {
+          return this.variants[this.selectedVariant].image
+      },
+      inStock() {
+          return this.variants[this.selectedVariant].quantity
+      },
+      shipping() {
         if (this.premium) {
           return 'Free'
         }
         return 2.99
-    }
+      }
   }
 })
